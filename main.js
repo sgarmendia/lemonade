@@ -1,19 +1,20 @@
 const https = require("https");
 
 const fs = require("fs");
-const { resolve } = require("path");
 
 // Calculate the date 6 months ago
 const sixMonthsAgo = new Date();
 sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6 || 12); // Avoid edge case when month is january (0)
 const sixMonthsAgoISOString = sixMonthsAgo.toISOString();
 
-function fetchTeasers(callback) {
+function fetchTeasers(param, callback) {
+	const descending = param ? `&descending=true` : "";
 	const options = {
 		hostname: "api.katholiekonderwijs.vlaanderen",
-		path: `/content?type=TEASER&issuedAfter=${sixMonthsAgoISOString}&orderBy=issued`,
+		path: `/content?type=TEASER&issuedAfter=${sixMonthsAgoISOString}&orderBy=issued${descending}`,
 		method: "GET",
 	};
+	console.log(options);
 
 	const req = https.request(options, (res) => {
 		let data = "";
@@ -34,9 +35,9 @@ function fetchTeasers(callback) {
 	req.end();
 }
 
-function main() {
+function main(param) {
 	return new Promise((resolve) => {
-		fetchTeasers((err, teasers) => {
+		fetchTeasers(param, (err, teasers) => {
 			if (err) {
 				console.error("Error fetching teasers:", err);
 				return;
@@ -66,7 +67,9 @@ function main() {
 			// Print title and issued date
 			teasersNotInNewsletter.forEach((teaser) => {
 				console.log(
-					`Title: ${teaser.$$expanded.title}, Issued Date: ${teaser.$$expanded.issued}`
+					`Title: ${teaser.$$expanded.title}, Issued Date: ${
+						teaser.$$expanded.issued || "No date available"
+					}`
 				);
 			});
 
@@ -86,7 +89,7 @@ function main() {
 
 			const message = `Number of teasers not only meant for schools: ${teasersNotForSchools.length}`;
 
-			console.log(message);
+			// console.log(message);
 
 			resolve({
 				teasersNotInNewsletter,
