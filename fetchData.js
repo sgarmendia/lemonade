@@ -72,7 +72,7 @@ async function fetchData() {
 		notOnlyForSchools: teasersNotOnlyForSchools.length.toString(),
 	};
 
-	cache.set("data", dataToChache, 10000);
+	cache.set("data", dataToChache, 20000);
 
 	return dataToChache;
 }

@@ -37,13 +37,25 @@ For unmatched routes, the server responds with a 400 status code and ends the re
 
 ## Cache
 
-To avoid excesive burden on the api and provide some throtling a cache is implemented with a TTL of 10000 ms.
+To avoid excesive burden on the api and provide some throtling a cache is implemented with a TTL of 20000 ms.
 
 ## Deployment
 
 The server is deployed to an _Elastic Beanstalk_ instance in AWS using a pipeline with _github actions_
 
-The deployed server can be teste here:
+The deployed server can be tested here:
+
+http://lemonade-env.eba-k7djjqd2.us-east-1.elasticbeanstalk.com/
+
+just add the desired route at the end:
+
+- **/allresults**
+
+- **/teasers**
+
+- **/titles**
+
+- **/notonlyforschools**
 
 ---
 
