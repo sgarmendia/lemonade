@@ -1,4 +1,4 @@
-const fs = require("node:fs");
+const fs = require("node:fs/promises");
 
 const cache = require("./cache");
 
@@ -33,17 +33,15 @@ async function fetchData() {
 		}
 	}
 
-	if (fs.existsSync("allResults.txt")) {
-		fs.unlink("allResults.txt", (err) => {
-			if (err) {
-				console.error("An error occurred:", err);
-			}
-		});
+	try {
+		await fs.unlink("allResults.txt");
+	} catch (error) {
+		if (error.code === "ENOENT") {
+			console.error("allResults.tx file does not exist");
+		}
+	} finally {
+		await fs.writeFile("allResults.txt", JSON.stringify(allResults));
 	}
-
-	fs.writeFile("allResults.txt", JSON.stringify(allResults), () => {
-		console.log("allResults.txt file created");
-	});
 
 	const teasersNotInNewsletter = allResults
 		.filter((teaser) => {

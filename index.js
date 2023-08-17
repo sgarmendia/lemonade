@@ -30,6 +30,7 @@ const server = http.createServer(async (req, res) => {
 				res.end("Error reading file");
 			});
 			allResultsStream.pipe(res);
+			break;
 		case "/teasers":
 			res.end(teasersNotInNewsletter);
 			break;
