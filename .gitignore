@@ -1,4 +1,2 @@
 # Output files
-logs.txt
-teasersNotForSchools.txt
-teasersNotInNewsletter.txt
+*.txt

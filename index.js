@@ -1,7 +1,8 @@
 const http = require("http");
-const url = require("url");
+const url = require("node:url");
+const fs = require("node:fs");
 
-const main = require("./main");
+const fetchData = require("./fetchData");
 
 const server = http.createServer(async (req, res) => {
 	const { pathname } = url.parse(req.url, true);
@@ -11,16 +12,41 @@ const server = http.createServer(async (req, res) => {
 		return res.end();
 	}
 
+	const {
+		titles,
+		teasersNotInNewsletter,
+		teasersNotOnlyForSchools,
+		notOnlyForSchools,
+	} = await fetchData();
+
 	res.writeHead(200, { "Content-Type": "application/json" });
 
 	switch (pathname) {
+		case "/allresults":
+			const allResultsStream = fs.createReadStream("allResults.txt");
+
+			allResultsStream.on("error", function () {
+				res.writeHead(500);
+				res.end("Error reading file");
+			});
+			allResultsStream.pipe(res);
 		case "/teasers":
-			const teasers = await main();
-			res.end(JSON.stringify(teasers));
+			res.end(teasersNotInNewsletter);
 			break;
-		case "/descending":
-			const descending = await main("descending");
-			res.end(JSON.stringify(descending));
+		case "/titles":
+			res.end(titles);
+			break;
+		case "/notonlyforschools":
+			res.end(
+				JSON.stringify(
+					{
+						notOnlyForSchools,
+						teasersNotOnlyForSchools: JSON.parse(teasersNotOnlyForSchools),
+					},
+					null,
+					2
+				)
+			);
 			break;
 		default:
 			res.writeHead(400);
@@ -32,4 +58,3 @@ const server = http.createServer(async (req, res) => {
 server.listen(3000, () => {
 	console.log("Server is listening on port 3000");
 });
-// https://8c19kdthxd.execute-api.us-east-1.amazonaws.com/med/95fab414-f63e-4df5-b539-6701098971c3
